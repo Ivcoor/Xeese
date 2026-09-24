@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Estilo neutro provisional. La identidad visual definitiva llega en la fase 8. */
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --muted: #6b6b6b;
+  --border: #e5e5e5;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --font-sans: var(--font-geist-sans);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}

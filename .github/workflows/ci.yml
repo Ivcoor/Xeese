@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: xeese
+          POSTGRES_PASSWORD: xeese
+          POSTGRES_DB: xeese_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      # Base de datos desechable del propio CI; no son credenciales reales.
+      DATABASE_URL: postgresql://xeese:xeese@localhost:5432/xeese_test?schema=public
+      BETTER_AUTH_SECRET: ci-secret-only-for-tests-0123456789abcdef
+      BETTER_AUTH_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npx prisma migrate deploy
+      - run: npm run test:integration
+      - run: npm run build
